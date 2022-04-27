@@ -6,8 +6,6 @@ from cmt.dge import dge
 import cmt.rig.twoboneik as twoboneik
 import cmt.rig.spaceswitch as spaceswitch
 
-reload(common)
-reload(twoboneik)
 
 
 class LegRig(object):

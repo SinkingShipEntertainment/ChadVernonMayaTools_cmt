@@ -8,9 +8,20 @@ cmake_policy(SET CMP0048 NEW)
 
 project(cmt VERSION 1.0 DESCRIPTION "Chad's Maya Tools" LANGUAGES CXX)
 
-set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR})
+# ----------------------------------
+# Comment them out in favor of REZ version below
+# ----------------------------------
+#set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR})
+#set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cgcmake/modules)
+
+#set(ENV{EIGEN3_ROOT_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/third-party/Eigen")
+
+#add_subdirectory(src)
+# ----------------------------------
+
+
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cgcmake/modules)
-
-set(ENV{EIGEN3_ROOT_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/third-party/Eigen")
-
 add_subdirectory(src)
+install(DIRECTORY scripts DESTINATION .)
+install(DIRECTORY icons DESTINATION .)
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/cmt.mod DESTINATION .)

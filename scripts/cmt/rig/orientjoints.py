@@ -16,7 +16,6 @@ import maya.cmds as cmds
 import maya.api.OpenMaya as OpenMaya
 
 import cmt.rig.skeleton as skeleton
-reload(skeleton)
 
 log = logging.getLogger(__name__)
 MESSAGE_ATTRIBUTE = "cmt_jointOrient"

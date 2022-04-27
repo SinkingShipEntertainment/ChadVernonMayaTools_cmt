@@ -65,3 +65,7 @@ target/
 # PyCharm
 .idea
 build.*/
+
+# SSE
+.vscode
+_rez_build

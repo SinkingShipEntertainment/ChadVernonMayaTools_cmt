@@ -5,6 +5,8 @@ Contains the menu creation functions as wells as any other functions the menus r
 import webbrowser
 import maya.cmds as cmds
 import maya.mel as mel
+
+import cmt
 from cmt.settings import DOCUMENTATION_ROOT
 
 
@@ -20,12 +22,12 @@ def create_menu():
         label="Freeze to offsetParentMatrix",
         command="import cmt.rig.common; cmt.rig.common.freeze_to_parent_offset()",
     )
-    cmds.menuItem(
-        parent=rig_menu,
-        label="CQueue",
-        command="import cmt.cqueue.window; cmt.cqueue.window.show()",
-        imageOverlayLabel="cqueue",
-    )
+    #cmds.menuItem(
+    #    parent=rig_menu,
+    #    label="CQueue",
+    #    command="import cmt.cqueue.window; cmt.cqueue.window.show()",
+    #    imageOverlayLabel="cqueue",
+    #)
     cmds.menuItem(parent=rig_menu, divider=True, dividerLabel="Skeleton")
     cmds.menuItem(
         parent=rig_menu,
@@ -33,13 +35,13 @@ def create_menu():
         command="import cmt.rig.orientjoints as oj; oj.OrientJointsWindow()",
         image="orientJoint.png",
     )
-    cmds.menuItem(
-        parent=rig_menu,
-        label="Rename Chain",
-        command="import cmt.name; cmt.name.rename_chain_ui()",
-        image="menuIconModify.png",
-        imageOverlayLabel="name",
-    )
+    #cmds.menuItem(
+    #    parent=rig_menu,
+    #    label="Rename Chain",
+    #    command="import cmt.name; cmt.name.rename_chain_ui()",
+    #    image="menuIconModify.png",
+    #    imageOverlayLabel="name",
+    #)
     cmds.menuItem(
         parent=rig_menu,
         label="Export Skeleton",
@@ -101,18 +103,18 @@ def create_menu():
     utility_menu = cmds.menuItem(
         subMenu=True, tearOff=True, parent=menu, label="Utility"
     )
-    cmds.menuItem(
-        parent=utility_menu,
-        label="Unit Test Runner",
-        command="import cmt.test.mayaunittestui; cmt.test.mayaunittestui.show()",
-        imageOverlayLabel="Test",
-    )
-    cmds.menuItem(
-        parent=utility_menu,
-        label="Reload",
-        command="import cmt.reloadmodules; cmt.reloadmodules.reload_modules()",
-        imageOverlayLabel="Test",
-    )
+    #cmds.menuItem(
+    #    parent=utility_menu,
+    #    label="Unit Test Runner",
+    #    command="import cmt.test.mayaunittestui; cmt.test.mayaunittestui.show()",
+    #    imageOverlayLabel="Test",
+    #)
+    #cmds.menuItem(
+    #    parent=utility_menu,
+    #    label="Reload",
+    #    command="import cmt.reloadmodules; cmt.reloadmodules.reload_modules()",
+    #    imageOverlayLabel="Test",
+    #)
     cmds.menuItem(
         parent=utility_menu,
         label="Resource Browser",

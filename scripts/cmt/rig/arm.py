@@ -5,8 +5,6 @@ import cmt.rig.common as common
 from cmt.dge import dge
 import cmt.rig.twoboneik as twoboneik
 
-reload(twoboneik)
-
 
 class ArmRig(object):
     def __init__(self, upper_arm_joint, hand_joint, name="arm"):

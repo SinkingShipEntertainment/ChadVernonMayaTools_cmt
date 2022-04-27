@@ -19,7 +19,6 @@ from cmt.ui.stringcache import StringCache
 import cmt.deform.blendshape as bs
 import cmt.deform.np_mesh as np_mesh
 
-reload(bs)
 import cmt.shortcuts as shortcuts
 from cmt.io.obj import import_obj, export_obj
 

@@ -20,6 +20,8 @@
 #define DEM_BONES_DEM_BONES_MAT_BLOCKS_UNDEFINED
 #endif
 
+#include <iostream>
+
 namespace Dem
 {
 
@@ -37,7 +39,7 @@ namespace Dem
 	-# Load optional data in the base class:
 		- Skinning weights: DemBones::w
 		- Bone transformations: DemBones::m
-	-# [@c optional] Set parameters in the base class: 
+	-# [@c optional] Set parameters in the base class:
 		- DemBones::nIters
 		- DemBones::nInitIters
 		- DemBones::nTransIters, DemBones::transAffine, DemBones::transAffineNorm
@@ -47,15 +49,15 @@ namespace Dem
 		- Set paramter: DemBonesExt::bindUpdate
 	-# [@c optional] Override callback functions (cb...) in the base class @ref DemBones
 	-# Call decomposition function DemBones::compute(), DemBones::computeWeights(), DemBones::computeTranformations(), or DemBones::init()
-	-# [@c optional] Get local transformations/bind poses with DemBonesExt::computeRTB() 
+	-# [@c optional] Get local transformations/bind poses with DemBonesExt::computeRTB()
 */
 
 /** @class DemBones DemBones.h "DemBones/DemBones.h"
 	@brief Smooth skinning decomposition with rigid bones and sparse, convex weights
-	
+
 	@details Setup the required data, parameters, and call either compute(), computeWeights(), computeTranformations(), or init().
-	
-	Callback functions and read-only values can be used to report progress: cbInitSplitBegin(), cbInitSplitEnd(), 
+
+	Callback functions and read-only values can be used to report progress: cbInitSplitBegin(), cbInitSplitEnd(),
 	cbIterBegin(), cbIterEnd(), cbWeightsBegin(), cbWeightsEnd(), cbTranformationsBegin(), cbTransformationsEnd(), cbTransformationsIterBegin(),
 	cbTransformationsIterEnd(), cbWeightsIterBegin(), cbWeightsIterEnd(), rmse(), #iter, #iterTransformations, #iterWeights.
 
@@ -63,7 +65,7 @@ namespace Dem
 */
 template<class _Scalar, class _AniMeshScalar>
 class DemBones {
-public: 
+public:
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
 	using MatrixX=Eigen::Matrix<_Scalar, Eigen::Dynamic, Eigen::Dynamic>;
@@ -80,43 +82,43 @@ public:
 
 	//! [@c parameter] Number of clustering update iterations in the initalization, @c default = 10
 	int nInitIters;
-	
+
 	//! [@c parameter] Number of bone transformations update iterations per global iteration, @c default = 5
 	int nTransIters;
 	//! [@c parameter] Translations affinity soft constraint, @c default = 10.0
 	_Scalar transAffine;
 	//! [@c parameter] p-norm for bone translations affinity soft constraint, @c default = 4.0
 	_Scalar transAffineNorm;
-	
+
 	//! [@c parameter] Number of weights update iterations per global iteration, @c default = 3
 	int nWeightsIters;
 	//! [@c parameter] Number of non-zero weights per vertex, @c default = 8
 	int nnz;
 	//! [@c parameter] Weights smoothness soft constraint, @c default = 1e-4
-	_Scalar weightsSmooth;	
+	_Scalar weightsSmooth;
 	//! [@c parameter] Step size for the weights smoothness soft constraint, @c default = 1.0
 	_Scalar weightsSmoothStep;
 	//! [@c parameter] Epsilon for weights solver, @c default = 1e-15
 	_Scalar weightEps;
-	
+
 	/** @brief Constructor and setting default parameters
 	*/
-	DemBones():	nIters(30), nInitIters(10), 
+	DemBones():	nIters(30), nInitIters(10),
 			nTransIters(5),	transAffine(_Scalar(10)), transAffineNorm(_Scalar(4)),
 			nWeightsIters(3), nnz(8), weightsSmooth(_Scalar(1e-4)), weightsSmoothStep(_Scalar(1)),
 			weightEps(_Scalar(1e-15)),
 			iter(_iter), iterTransformations(_iterTransformations), iterWeights(_iterWeights) {
 		clear();
 	}
-	
+
 	//! Number of vertices, typically indexed by @p i
 	int nV;
 	//! Number of bones, typically indexed by @p j
-	int nB;					
+	int nB;
 	//! Number of subjects, typically indexed by @p s
-	int nS;		
+	int nS;
 	//! Number of total frames, typically indexed by @p k, #nF = #fStart(#nS)
-	int nF;	
+	int nF;
 
 	//! Start frame indices, @c size = #nS+1, #fStart(@p s), #fStart(@p s+1) are data frames for subject @p s
 	Eigen::VectorXi fStart;
@@ -134,10 +136,10 @@ public:
 	*/
 	MatrixX m;
 	MatrixX origM;
-	
+
 	//! Animated mesh sequence, @c size = [3*#nF, #nV], #v.@a col(@p i).@a segment(3*@p k, 3) is the position of vertex @p i at frame @p k
 	Eigen::Matrix<_AniMeshScalar, Eigen::Dynamic, Eigen::Dynamic> v;
-	
+
 	//! Mesh topology, @c size=[<tt>number of polygons</tt>], #fv[@p p] is the vector of vertex indices of polygon @p p
 	std::vector<std::vector<int>> fv;
 
@@ -149,7 +151,7 @@ public:
 
 	//! [<tt>zero indexed</tt>, <tt>read only</tt>] Current weights update iteration number that can be used for callback functions
 	const int& iterWeights;
-	
+
 	/** @brief Clear all data
 	*/
 	void clear() {
@@ -172,7 +174,7 @@ public:
 			- Both #w and #m are missing (zero size): initialize both with rigid skinning using approximately #nB bones, i.e. values of #w are 0 or 1.
 			LBG-VQ clustering is peformed using mesh sequence #v, rest pose geometries #u and topology #fv.
 			@b Note: as the initialization does not use exactly #nB bones, the value of #nB could be changed when both #w and #m are missing.
-			
+
 		This function is called at the begining of every compute update functions as a safeguard.
 	*/
 	bool init() {
@@ -248,7 +250,7 @@ public:
 					for (int it=uuT.outerIdx(j); it<uuT.outerIdx(j + 1); it++)
 						if (uuT.innerIdx(it)!=j) qpT-=m.blk4(k, uuT.innerIdx(it))*uuT.val.blk4(subjectID(k), it);
 					qpT2m(qpT, k, j);
-	
+
 				}
 
 			if (origM.rows() && m.cols() >= origM.cols()) {
@@ -256,7 +258,7 @@ public:
 			}
 			cbTransformationsIterEnd();
 		}
-		
+
 		cbTransformationsEnd();
 	}
 
@@ -275,10 +277,10 @@ public:
 	*/
 	void computeWeights() {
 		if (nWeightsIters==0) return;
-		
+
 		init();
 		cbWeightsBegin();
-		
+
 		compute_mTm();
 
 		aTb=MatrixX::Zero(nB, nV);
@@ -321,10 +323,10 @@ public:
 
 			w.resize(nB, nV);
 			w.setFromTriplets(trip.begin(), trip.end());
-			
+
 			cbWeightsIterEnd();
 		}
-		
+
 		cbWeightsEnd();
 	}
 
@@ -353,7 +355,7 @@ public:
 		}
 		return true;
 	}
-	
+
 	//! @return Root mean squared reconstruction error
 	_Scalar rmse() {
 		_Scalar e=0;
@@ -491,7 +493,7 @@ private:
 		}
 
 		#pragma omp parallel for
-		for (int i=0; i<nV; i++) 
+		for (int i=0; i<nV; i++)
 			if (label(i)==-1) {
 				_Scalar gMin;
 				for (int j=0; j<nB; j++) {
@@ -511,7 +513,7 @@ private:
 		#pragma omp parallel for
 		for (int k=0; k<nF; k++) {
 			MatrixX qpT=MatrixX::Zero(4, 4*nB);
-			for (int i=0; i<nV; i++) 
+			for (int i=0; i<nV; i++)
 				if (label(i)!=-1) qpT.blk4(0, label(i))+=Vector4(v.vec3(k, i).template cast<_Scalar>().homogeneous())*u.vec3(subjectID(k), i).homogeneous().transpose();
 			for (int j=0; j<nB; j++) qpT2m(qpT.blk4(0, j), k, j);
 		}
@@ -528,7 +530,7 @@ private:
 
 	/** Split bone clusters
 		@param maxB is the maximum number of bones
-		@param threshold*2 is the minimum size of the bone cluster to be splited 
+		@param threshold*2 is the minimum size of the bone cluster to be splited
 	*/
 	void split(int maxB, int threshold) {
 		//Centroids
@@ -645,7 +647,7 @@ private:
 					vuT.blk4(k, j)+=(transAffine*vuT(k*4+3, j*4+3)/vuTp(3, j*4+3))*vuTp.blk4(0, j);
 		}
 	}
-	
+
 	//! uuT is a sparse block matrix, uuT(j, k).block<4, 4>(s*4, 0) = \sum{i=0}{nV-1} w(j, i)*w(k, i)*u.col(i).segment<3>(s*3).homogeneous().transpose()*u.col(i).segment<3>(s*3).homogeneous()
 	struct SparseMatrixBlock {
 		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -747,7 +749,7 @@ private:
 
 	//! Size of the model=RMS distance to centroid
 	_Scalar modelSize;
-	
+
 	//! Laplacian matrix
 	SparseMatrix laplacian;
 
@@ -850,7 +852,7 @@ private:
 			}
 	}
 };
-	
+
 }
 
 #ifdef DEM_BONES_DEM_BONES_MAT_BLOCKS_UNDEFINED
